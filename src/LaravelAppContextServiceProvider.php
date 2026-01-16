@@ -46,7 +46,7 @@ class LaravelAppContextServiceProvider extends ServiceProvider
             }
 
             foreach ($config['channels'] as $channelName => $channelClass) {
-                $manager->addChannel($app->make($channelClass, ['config' => $config['channel_config ']]));
+                $manager->addChannel($app->make($channelClass, ['config' => $config['channel_settings ']]));
             }
 
             return $manager;
