@@ -9,7 +9,7 @@ class TimestampProvider extends AbstractProvider
     public function getContext(): array
     {
         return [
-            'timestamp' => now()->toIso8601String(),
+            'timestamp' => fn () => now()->toIso8601String(),
         ];
     }
 }

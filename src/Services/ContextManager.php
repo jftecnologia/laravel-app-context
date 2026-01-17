@@ -66,21 +66,37 @@ class ContextManager
 
         $this->built = true;
 
-        $this->dispatchToChannels();
-
         return $this->context;
     }
 
     /**
-     * Dispatches the context to the enabled channels
+     * Sends the built context to all enabled channels
      */
-    protected function dispatchToChannels(): void
+    public function buildChannelsContext(): void
     {
         foreach ($this->channels as $channel) {
             if ($channel->isEnabled()) {
-                $channel->send($this->context);
+                $channel->send($this->resolveContext($this->context));
             }
         }
+    }
+
+    /**
+     * Resolves any callable values in the context array
+     */
+    protected function resolveContext(array $context): array
+    {
+        $resolvedContext = [];
+
+        foreach ($context as $key => $value) {
+            if (is_callable($value)) {
+                $resolvedContext[$key] = $value();
+            } else {
+                $resolvedContext[$key] = $value;
+            }
+        }
+
+        return $resolvedContext;
     }
 
     /**
