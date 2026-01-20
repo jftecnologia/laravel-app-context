@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext\Services;
+namespace JuniorFontenele\LaravelAppContext;
 
 use Illuminate\Support\Arr;
 use JuniorFontenele\LaravelAppContext\Contracts\ContextChannel;

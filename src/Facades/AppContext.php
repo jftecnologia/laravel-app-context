@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace JuniorFontenele\LaravelAppContext\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use JuniorFontenele\LaravelAppContext\Services\ContextManager;
+use JuniorFontenele\LaravelAppContext\ContextManager;
 
 /**
  *@method static array all()

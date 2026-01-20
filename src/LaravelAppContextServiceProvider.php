@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace JuniorFontenele\LaravelAppContext;
 
 use Illuminate\Support\ServiceProvider;
-use JuniorFontenele\LaravelAppContext\Services\ContextManager;
 
 class LaravelAppContextServiceProvider extends ServiceProvider
 {
