@@ -29,8 +29,6 @@ class ContextManager
     {
         $this->providers[] = $providers;
 
-        $this->built = false;
-
         return $this;
     }
 
@@ -107,7 +105,6 @@ class ContextManager
     public function clear(): self
     {
         $this->context = [];
-        $this->built = false;
 
         return $this;
     }

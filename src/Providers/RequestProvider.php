@@ -8,7 +8,7 @@ class RequestProvider extends AbstractProvider
 {
     public function shouldRun(): bool
     {
-        return ! app()->runningInConsole() && request() !== null;
+        return ! app()->runningInConsole();
     }
 
     public function getContext(): array

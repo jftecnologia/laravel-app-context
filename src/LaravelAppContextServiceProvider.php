@@ -46,7 +46,7 @@ class LaravelAppContextServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/app-context.php', 'app-context');
 
-        $this->app->bind(ContextManager::class, function ($app) {
+        $this->app->bind(function ($app): ContextManager {
             $config = config('app-context');
 
             $manager = new ContextManager($config);

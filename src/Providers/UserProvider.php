@@ -18,8 +18,6 @@ class UserProvider extends AbstractProvider
         return [
             'user' => [
                 'id' => Auth::id(),
-                'name' => Auth::user()->name,
-                'email' => Auth::user()->email,
             ],
         ];
     }
