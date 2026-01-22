@@ -1,8 +1,8 @@
 # Laravel App Context
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/juniorfontenele/laravel-app-context.svg?style=flat-square)](https://packagist.org/packages/juniorfontenele/laravel-app-context)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/juniorfontenele/laravel-app-context/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/juniorfontenele/laravel-app-context/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/juniorfontenele/laravel-app-context/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/juniorfontenele/laravel-app-context/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/juniorfontenele/laravel-app-context/tests.yml?branch=master&label=tests&style=flat-square)](https://github.com/juniorfontenele/laravel-app-context/actions?query=workflow%3Atests+branch%3Amaster)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/juniorfontenele/laravel-app-context/fix-php-code-style.yml?branch=master&label=code%20style&style=flat-square)](https://github.com/juniorfontenele/laravel-app-context/actions?query=workflow%3A"fix-php-code-style-issues"+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/juniorfontenele/laravel-app-context.svg?style=flat-square)](https://packagist.org/packages/juniorfontenele/laravel-app-context)
 
 A powerful and extensible package for managing application context in Laravel. Automatically collect and distribute context information from multiple sources (user, request, environment, etc.) to various channels (logs, monitoring systems, etc.).
