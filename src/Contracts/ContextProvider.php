@@ -15,4 +15,12 @@ interface ContextProvider
      * Indicates if the provider should run
      */
     public function shouldRun(): bool;
+
+    /**
+     * Determines if this provider's context should be cached
+     * or always recalculated on each request
+     *
+     * @return bool true if cacheable, false if should always recalculate
+     */
+    public function isCacheable(): bool;
 }

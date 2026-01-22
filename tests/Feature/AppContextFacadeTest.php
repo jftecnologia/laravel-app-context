@@ -36,19 +36,29 @@ describe('AppContext Facade', function () {
     });
 
     it('can call set() method through facade', function () {
+        AppContext::resolveContext(); // Resolve primeiro
         AppContext::set('custom.key', 'facade-value');
 
         expect(AppContext::get('custom.key'))->toBe('facade-value');
     });
 
     it('can call clear() method through facade', function () {
-        AppContext::set('test', 'value');
-        expect(AppContext::get('test'))->toBe('value');
+        // Este teste verifica se o clear() limpa o contexto manual
+        // mas não os providers registrados (que são parte da configuração)
 
-        AppContext::clear();
+        // Adiciona valor manual
+        AppContext::resolveContext();
+        AppContext::set('manual.test', 'value');
+        expect(AppContext::has('manual.test'))->toBeTrue();
 
-        AppContext::set('dummy', 'dummy'); // Para forçar resolução
-        expect(AppContext::get('test'))->toBeNull();
+        // Clear deve limpar tudo (incluindo valores manuais)
+        $result = AppContext::clear();
+
+        expect($result)->toBeInstanceOf(ContextManager::class);
+
+        // Após clear, valores manuais devem sumir
+        // mas o contexto pode ter providers do service provider
+        expect(AppContext::has('manual.test'))->toBeFalse();
     });
 
     it('can call addProvider() method through facade', function () {
@@ -63,14 +73,15 @@ describe('AppContext Facade', function () {
         AppContext::clear();
         AppContext::addProvider(new TimestampProvider());
 
-        $context = AppContext::resolveContext();
+        $result = AppContext::resolveContext();
 
-        expect($context)->toBeArray();
-        expect($context)->toHaveKey('timestamp');
+        expect($result)->toBeInstanceOf(ContextManager::class);
+        expect(AppContext::all())->toHaveKey('timestamp');
     });
 
     it('can chain methods through facade', function () {
         AppContext::clear()
+            ->resolveContext() // Resolve primeiro
             ->set('key1', 'value1')
             ->set('key2', 'value2');
 
@@ -86,6 +97,7 @@ describe('AppContext Facade', function () {
 
     it('handles nested keys through facade', function () {
         AppContext::clear();
+        AppContext::resolveContext(); // Resolve primeiro
         AppContext::set('nested.deep.key', 'nested-value');
 
         expect(AppContext::get('nested.deep.key'))->toBe('nested-value');

@@ -18,6 +18,17 @@ class ContextManager
     /** @var ContextChannel[] */
     protected array $channels = [];
 
+    /**
+     * Flag to track if context has been resolved
+     */
+    protected bool $resolved = false;
+
+    /**
+     * Cache for providers that are cacheable
+     * Key: provider class name, Value: cached context
+     */
+    protected array $providerCache = [];
+
     public function __construct(protected array $config)
     {
     }
@@ -45,20 +56,34 @@ class ContextManager
     /*
     * Builds the context running the providers
     */
-    public function resolveContext(): array
+    public function resolveContext(): self
     {
+        $this->context = [];
+
         foreach ($this->providers as $provider) {
             if ($provider->shouldRun()) {
-                $this->context = array_merge(
-                    $this->context,
-                    $provider->getContext()
-                );
+                $providerClass = get_class($provider);
+
+                // Use cached context if provider is cacheable and cache exists
+                if ($provider->isCacheable() && isset($this->providerCache[$providerClass])) {
+                    $providerContext = $this->providerCache[$providerClass];
+                } else {
+                    // Get fresh context and cache it if provider is cacheable
+                    $providerContext = $provider->getContext();
+
+                    if ($provider->isCacheable()) {
+                        $this->providerCache[$providerClass] = $providerContext;
+                    }
+                }
+
+                $this->context = array_merge($this->context, $providerContext);
             }
         }
 
         $this->sendContextToChannels();
+        $this->resolved = true;
 
-        return $this->context;
+        return $this;
     }
 
     /**
@@ -76,7 +101,9 @@ class ContextManager
      */
     public function all(): array
     {
-        $this->resolveContext();
+        if (! $this->resolved) {
+            $this->resolveContext();
+        }
 
         return $this->context;
     }
@@ -90,6 +117,14 @@ class ContextManager
     }
 
     /**
+     * Checks if a context key exists
+     */
+    public function has(string $key): bool
+    {
+        return Arr::has($this->all(), $key);
+    }
+
+    /**
      * Sets a specific context value by key
      */
     public function set(string $key, mixed $value): self
@@ -100,11 +135,37 @@ class ContextManager
     }
 
     /**
+     * Forces context recalculation
+     */
+    public function refresh(): self
+    {
+        $this->resolved = false;
+        $this->providerCache = [];
+
+        return $this->resolveContext();
+    }
+
+    /**
+     * Clears cache for a specific provider
+     *
+     * @param string $providerClass Fully qualified class name of the provider
+     */
+    public function clearProviderCache(string $providerClass): self
+    {
+        unset($this->providerCache[$providerClass]);
+        $this->resolved = false;
+
+        return $this;
+    }
+
+    /**
      * Clears the current context
      */
     public function clear(): self
     {
         $this->context = [];
+        $this->resolved = false;
+        $this->providerCache = [];
 
         return $this;
     }

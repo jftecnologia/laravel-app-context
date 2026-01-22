@@ -41,10 +41,12 @@ describe('ContextManager', function () {
     it('resolves context from providers', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
         $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
 
         $this->manager->addProvider($provider);
-        $context = $this->manager->resolveContext();
+        $this->manager->resolveContext();
+        $context = $this->manager->all();
 
         expect($context)->toHaveKey('test');
         expect($context['test'])->toBe('value');
@@ -53,10 +55,12 @@ describe('ContextManager', function () {
     it('skips providers that should not run', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(false);
+        $provider->shouldReceive('isCacheable')->never();
         $provider->shouldReceive('getContext')->never();
 
         $this->manager->addProvider($provider);
-        $context = $this->manager->resolveContext();
+        $this->manager->resolveContext();
+        $context = $this->manager->all();
 
         expect($context)->toBeEmpty();
     });
@@ -64,15 +68,17 @@ describe('ContextManager', function () {
     it('merges context from multiple providers', function () {
         $provider1 = Mockery::mock(ContextProvider::class);
         $provider1->shouldReceive('shouldRun')->andReturn(true);
+        $provider1->shouldReceive('isCacheable')->andReturn(false); // Sem cache para este teste
         $provider1->shouldReceive('getContext')->andReturn(['key1' => 'value1']);
 
         $provider2 = Mockery::mock(ContextProvider::class);
         $provider2->shouldReceive('shouldRun')->andReturn(true);
+        $provider2->shouldReceive('isCacheable')->andReturn(false); // Sem cache para este teste
         $provider2->shouldReceive('getContext')->andReturn(['key2' => 'value2']);
 
         $this->manager->addProvider($provider1);
         $this->manager->addProvider($provider2);
-        $context = $this->manager->resolveContext();
+        $context = $this->manager->all();
 
         expect($context)->toHaveKeys(['key1', 'key2']);
         expect($context['key1'])->toBe('value1');
@@ -82,6 +88,7 @@ describe('ContextManager', function () {
     it('sends context to channels after resolving', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
         $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
 
         $channel = Mockery::mock(ContextChannel::class);
@@ -97,6 +104,7 @@ describe('ContextManager', function () {
     it('returns all context data', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
         $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
 
         $this->manager->addProvider($provider);
@@ -109,6 +117,7 @@ describe('ContextManager', function () {
     it('gets a specific context value by key', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
         $provider->shouldReceive('getContext')->andReturn([
             'nested' => [
                 'key' => 'value',
@@ -125,6 +134,9 @@ describe('ContextManager', function () {
     });
 
     it('can set a context value', function () {
+        // Primeiro resolve o contexto para marcar como resolvido
+        $this->manager->resolveContext();
+
         $result = $this->manager->set('custom', 'value');
 
         expect($result)->toBeInstanceOf(ContextManager::class);
@@ -132,12 +144,18 @@ describe('ContextManager', function () {
     });
 
     it('can set nested context values', function () {
+        // Primeiro resolve o contexto para marcar como resolvido
+        $this->manager->resolveContext();
+
         $this->manager->set('nested.deep.key', 'value');
 
         expect($this->manager->get('nested.deep.key'))->toBe('value');
     });
 
     it('can clear the context', function () {
+        // Primeiro resolve o contexto para marcar como resolvido
+        $this->manager->resolveContext();
+
         $this->manager->set('test', 'value');
         expect($this->manager->get('test'))->toBe('value');
 
@@ -146,7 +164,6 @@ describe('ContextManager', function () {
         expect($result)->toBeInstanceOf(ContextManager::class);
 
         // Após clear, o contexto deve estar vazio
-        $this->manager->set('dummy', 'dummy'); // Apenas para forçar resolução
-        expect($this->manager->get('test'))->toBeNull();
+        expect($this->manager->all())->toBeEmpty();
     });
 });

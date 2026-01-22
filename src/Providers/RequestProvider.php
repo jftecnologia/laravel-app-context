@@ -6,6 +6,15 @@ namespace JuniorFontenele\LaravelAppContext\Providers;
 
 class RequestProvider extends AbstractProvider
 {
+    /**
+     * Request context is NOT cacheable because request attributes
+     * can be modified during the request lifecycle (middleware, etc.)
+     */
+    public function isCacheable(): bool
+    {
+        return false;
+    }
+
     public function shouldRun(): bool
     {
         return ! app()->runningInConsole();

@@ -23,15 +23,6 @@ class LaravelAppContextServiceProvider extends ServiceProvider
 
         if (config('app-context.enabled', true)) {
             $contextManager = $this->app->make(ContextManager::class);
-            $config = config('app-context');
-
-            foreach ($config['providers'] as $providerClass) {
-                $contextManager->addProvider($this->app->make($providerClass));
-            }
-
-            foreach ($config['channels'] as $channelClass) {
-                $contextManager->addChannel($this->app->make($channelClass));
-            }
 
             $contextManager->resolveContext();
         }
@@ -46,12 +37,22 @@ class LaravelAppContextServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/app-context.php', 'app-context');
 
-        $this->app->bind(function ($app): ContextManager {
+        $this->app->singleton(ContextManager::class, function ($app): ContextManager {
             $config = config('app-context');
 
-            $manager = new ContextManager($config);
+            $contextManager = new ContextManager($config);
 
-            return $manager;
+            if ($config['enabled'] ?? true) {
+                foreach ($config['providers'] as $providerClass) {
+                    $contextManager->addProvider($this->app->make($providerClass));
+                }
+
+                foreach ($config['channels'] as $channelClass) {
+                    $contextManager->addChannel($this->app->make($channelClass));
+                }
+            }
+
+            return $contextManager;
         });
 
         $this->app->alias(ContextManager::class, 'app-context');

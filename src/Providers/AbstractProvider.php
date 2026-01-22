@@ -12,4 +12,13 @@ abstract class AbstractProvider implements ContextProvider
     {
         return true;
     }
+
+    /**
+     * By default, providers are cacheable (static context)
+     * Override this method for providers with dynamic context (e.g., user, request)
+     */
+    public function isCacheable(): bool
+    {
+        return true;
+    }
 }

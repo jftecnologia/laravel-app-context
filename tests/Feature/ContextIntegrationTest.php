@@ -34,7 +34,8 @@ describe('Context Integration', function () {
         $manager->addChannel(new LogChannel());
 
         // Resolver contexto
-        $context = $manager->resolveContext();
+        $manager->resolveContext();
+        $context = $manager->all();
 
         expect($context)->toHaveKey('timestamp');
         expect($context)->toHaveKey('app');
@@ -85,7 +86,8 @@ describe('Context Integration', function () {
         $manager->addProvider($provider1);
         $manager->addProvider($provider2);
 
-        $context = $manager->resolveContext();
+        $manager->resolveContext();
+        $context = $manager->all();
 
         // O segundo provider deve sobrescrever o primeiro
         expect($context['custom'])->toHaveKey('key2');
@@ -96,6 +98,7 @@ describe('Context Integration', function () {
         $manager = new ContextManager($config);
 
         $manager->addProvider(new TimestampProvider());
+        $manager->resolveContext(); // Resolve primeiro
         $manager->set('custom.field', 'custom-value');
 
         $context = $manager->all();
@@ -178,7 +181,8 @@ describe('Context Integration', function () {
         $manager->addProvider($provider1);
         $manager->addProvider($provider2);
 
-        $context = $manager->resolveContext();
+        $manager->resolveContext();
+        $context = $manager->all();
 
         expect($order)->toBe([1, 2]);
         expect($context['provider'])->toBe(2); // Último provider vence
