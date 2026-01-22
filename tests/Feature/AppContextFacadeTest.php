@@ -36,7 +36,7 @@ describe('AppContext Facade', function () {
     });
 
     it('can call set() method through facade', function () {
-        AppContext::resolveContext(); // Resolve primeiro
+        AppContext::build(); // Resolve primeiro
         AppContext::set('custom.key', 'facade-value');
 
         expect(AppContext::get('custom.key'))->toBe('facade-value');
@@ -47,7 +47,7 @@ describe('AppContext Facade', function () {
         // mas não os providers registrados (que são parte da configuração)
 
         // Adiciona valor manual
-        AppContext::resolveContext();
+        AppContext::build();
         AppContext::set('manual.test', 'value');
         expect(AppContext::has('manual.test'))->toBeTrue();
 
@@ -69,11 +69,11 @@ describe('AppContext Facade', function () {
         expect($result)->toBeInstanceOf(ContextManager::class);
     });
 
-    it('can call resolveContext() method through facade', function () {
+    it('can call build() method through facade', function () {
         AppContext::clear();
         AppContext::addProvider(new TimestampProvider());
 
-        $result = AppContext::resolveContext();
+        $result = AppContext::build();
 
         expect($result)->toBeInstanceOf(ContextManager::class);
         expect(AppContext::all())->toHaveKey('timestamp');
@@ -81,7 +81,7 @@ describe('AppContext Facade', function () {
 
     it('can chain methods through facade', function () {
         AppContext::clear()
-            ->resolveContext() // Resolve primeiro
+            ->build() // Resolve primeiro
             ->set('key1', 'value1')
             ->set('key2', 'value2');
 
@@ -97,7 +97,7 @@ describe('AppContext Facade', function () {
 
     it('handles nested keys through facade', function () {
         AppContext::clear();
-        AppContext::resolveContext(); // Resolve primeiro
+        AppContext::build(); // Resolve primeiro
         AppContext::set('nested.deep.key', 'nested-value');
 
         expect(AppContext::get('nested.deep.key'))->toBe('nested-value');

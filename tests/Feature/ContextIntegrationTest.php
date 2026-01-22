@@ -34,7 +34,7 @@ describe('Context Integration', function () {
         $manager->addChannel(new LogChannel());
 
         // Resolver contexto
-        $manager->resolveContext();
+        $manager->build();
         $context = $manager->all();
 
         expect($context)->toHaveKey('timestamp');
@@ -86,7 +86,7 @@ describe('Context Integration', function () {
         $manager->addProvider($provider1);
         $manager->addProvider($provider2);
 
-        $manager->resolveContext();
+        $manager->build();
         $context = $manager->all();
 
         // O segundo provider deve sobrescrever o primeiro
@@ -98,7 +98,7 @@ describe('Context Integration', function () {
         $manager = new ContextManager($config);
 
         $manager->addProvider(new TimestampProvider());
-        $manager->resolveContext(); // Resolve primeiro
+        $manager->build(); // Resolve primeiro
         $manager->set('custom.field', 'custom-value');
 
         $context = $manager->all();
@@ -141,7 +141,7 @@ describe('Context Integration', function () {
         $channel1 = new LogChannel();
         $manager->addChannel($channel1);
 
-        $manager->resolveContext();
+        $manager->build();
     });
 
     it('processes providers in order', function () {
@@ -181,7 +181,7 @@ describe('Context Integration', function () {
         $manager->addProvider($provider1);
         $manager->addProvider($provider2);
 
-        $manager->resolveContext();
+        $manager->build();
         $context = $manager->all();
 
         expect($order)->toBe([1, 2]);

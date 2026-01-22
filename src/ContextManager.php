@@ -18,7 +18,7 @@ class ContextManager
     /** @var ContextChannel[] */
     protected array $channels = [];
 
-    protected bool $resolved = false;
+    protected bool $built = false;
 
     /** @var array<string, array> */
     protected array $providerCache = [];
@@ -50,7 +50,7 @@ class ContextManager
     /*
     * Builds the context running the providers
     */
-    public function resolveContext(): self
+    public function build(): self
     {
         $this->context = [];
 
@@ -73,7 +73,7 @@ class ContextManager
         }
 
         $this->sendContextToChannels();
-        $this->resolved = true;
+        $this->built = true;
 
         return $this;
     }
@@ -93,8 +93,8 @@ class ContextManager
      */
     public function all(): array
     {
-        if (! $this->resolved) {
-            $this->resolveContext();
+        if (! $this->built) {
+            $this->build();
         }
 
         return $this->context;
@@ -133,7 +133,7 @@ class ContextManager
     {
         $this->clear();
 
-        return $this->resolveContext();
+        return $this->build();
     }
 
     /**
@@ -144,7 +144,7 @@ class ContextManager
     public function clearProviderCache(string $providerClass): self
     {
         unset($this->providerCache[$providerClass]);
-        $this->resolved = false;
+        $this->built = false;
 
         return $this;
     }
@@ -155,7 +155,7 @@ class ContextManager
     public function clear(): self
     {
         $this->context = [];
-        $this->resolved = false;
+        $this->built = false;
         $this->providerCache = [];
 
         return $this;

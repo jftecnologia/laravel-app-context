@@ -45,7 +45,7 @@ describe('ContextManager', function () {
         $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
 
         $this->manager->addProvider($provider);
-        $this->manager->resolveContext();
+        $this->manager->build();
         $context = $this->manager->all();
 
         expect($context)->toHaveKey('test');
@@ -59,7 +59,7 @@ describe('ContextManager', function () {
         $provider->shouldReceive('getContext')->never();
 
         $this->manager->addProvider($provider);
-        $this->manager->resolveContext();
+        $this->manager->build();
         $context = $this->manager->all();
 
         expect($context)->toBeEmpty();
@@ -98,7 +98,7 @@ describe('ContextManager', function () {
 
         $this->manager->addProvider($provider);
         $this->manager->addChannel($channel);
-        $this->manager->resolveContext();
+        $this->manager->build();
     });
 
     it('returns all context data', function () {
@@ -135,7 +135,7 @@ describe('ContextManager', function () {
 
     it('can set a context value', function () {
         // Primeiro resolve o contexto para marcar como resolvido
-        $this->manager->resolveContext();
+        $this->manager->build();
 
         $result = $this->manager->set('custom', 'value');
 
@@ -145,7 +145,7 @@ describe('ContextManager', function () {
 
     it('can set nested context values', function () {
         // Primeiro resolve o contexto para marcar como resolvido
-        $this->manager->resolveContext();
+        $this->manager->build();
 
         $this->manager->set('nested.deep.key', 'value');
 
@@ -154,7 +154,7 @@ describe('ContextManager', function () {
 
     it('can clear the context', function () {
         // Primeiro resolve o contexto para marcar como resolvido
-        $this->manager->resolveContext();
+        $this->manager->build();
 
         $this->manager->set('test', 'value');
         expect($this->manager->get('test'))->toBe('value');

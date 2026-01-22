@@ -24,7 +24,7 @@ class LaravelAppContextServiceProvider extends ServiceProvider
         if (config('app-context.enabled', true)) {
             $contextManager = $this->app->make(ContextManager::class);
 
-            $contextManager->resolveContext();
+            $contextManager->build();
         }
     }
 

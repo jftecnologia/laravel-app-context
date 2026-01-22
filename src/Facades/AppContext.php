@@ -12,7 +12,7 @@ use JuniorFontenele\LaravelAppContext\ContextManager;
  * @method static mixed get(string $key, mixed $default = null)
  * @method static bool has(string $key)
  * @method static self set(string $key, mixed $value)
- * @method static self resolveContext()
+ * @method static self build()
  * @method static self refresh()
  * @method static self clear()
  * @method static self clearProviderCache(string $providerClass)
