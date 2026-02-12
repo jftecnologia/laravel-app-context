@@ -102,6 +102,8 @@ describe('Context Integration', function () {
         $manager = new ContextManager();
 
         $manager->addProvider(new TimestampProvider());
+        $manager->build();
+
         $context1 = $manager->all();
 
         expect($context1)->toHaveKey('timestamp');

@@ -73,6 +73,9 @@ describe('ContextManager', function () {
 
         $this->manager->addProvider($provider1);
         $this->manager->addProvider($provider2);
+
+        $this->manager->build();
+
         $context = $this->manager->all();
 
         expect($context)->toHaveKeys(['key1', 'key2']);
@@ -80,20 +83,47 @@ describe('ContextManager', function () {
         expect($context['key2'])->toBe('value2');
     });
 
-    it('sends context to channels after resolving', function () {
+    it('replays context to channels when build short-circuits', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(true);
         $provider->shouldReceive('isCacheable')->andReturn(true);
-        $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
+        $provider->shouldReceive('getContext')->once()->andReturn(['test' => 'value']);
 
         $channel = Mockery::mock(ContextChannel::class);
         $channel->shouldReceive('registerContext')
-            ->once()
+            ->twice()
             ->with(['test' => 'value']);
 
         $this->manager->addProvider($provider);
         $this->manager->addChannel($channel);
         $this->manager->build();
+
+        // Second build should not rerun providers but should resend context to channels
+        $this->manager->build();
+    });
+
+    it('notifies channels when set updates context', function () {
+        $provider = Mockery::mock(ContextProvider::class);
+        $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
+        $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
+
+        $contexts = [];
+        $channel = Mockery::mock(ContextChannel::class);
+        $channel->shouldReceive('registerContext')
+            ->andReturnUsing(function (array $context) use (&$contexts): void {
+                $contexts[] = $context;
+            });
+
+        $this->manager->addProvider($provider);
+        $this->manager->addChannel($channel);
+        $this->manager->build();
+
+        $this->manager->set('custom', 'value');
+
+        expect($contexts)->toHaveCount(2);
+        expect($contexts[0])->toHaveKey('test');
+        expect($contexts[1])->toHaveKey('custom');
     });
 
     it('returns all context data', function () {
@@ -103,6 +133,8 @@ describe('ContextManager', function () {
         $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
 
         $this->manager->addProvider($provider);
+        $this->manager->build();
+
         $all = $this->manager->all();
 
         expect($all)->toHaveKey('test');
@@ -120,6 +152,7 @@ describe('ContextManager', function () {
         ]);
 
         $this->manager->addProvider($provider);
+        $this->manager->build();
 
         expect($this->manager->get('nested.key'))->toBe('value');
     });
@@ -129,7 +162,6 @@ describe('ContextManager', function () {
     });
 
     it('can set a context value', function () {
-        // Primeiro resolve o contexto para marcar como resolvido
         $this->manager->build();
 
         $result = $this->manager->set('custom', 'value');
@@ -139,7 +171,6 @@ describe('ContextManager', function () {
     });
 
     it('can set nested context values', function () {
-        // Primeiro resolve o contexto para marcar como resolvido
         $this->manager->build();
 
         $this->manager->set('nested.deep.key', 'value');
@@ -147,8 +178,22 @@ describe('ContextManager', function () {
         expect($this->manager->get('nested.deep.key'))->toBe('value');
     });
 
-    it('can clear the context', function () {
-        // Primeiro resolve o contexto para marcar como resolvido
+    it('can clear the context and notify channels', function () {
+        $provider = Mockery::mock(ContextProvider::class);
+        $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
+        $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
+
+        $contexts = [];
+        $channel = Mockery::mock(ContextChannel::class);
+        $channel->shouldReceive('registerContext')
+            ->times(3)
+            ->andReturnUsing(function (array $context) use (&$contexts): void {
+                $contexts[] = $context;
+            });
+
+        $this->manager->addProvider($provider);
+        $this->manager->addChannel($channel);
         $this->manager->build();
 
         $this->manager->set('test', 'value');
@@ -157,9 +202,9 @@ describe('ContextManager', function () {
         $result = $this->manager->clear();
 
         expect($result)->toBeInstanceOf(ContextManager::class);
-
-        // Após clear, o contexto deve estar vazio
         expect($this->manager->all())->toBeEmpty();
+        expect($contexts)->toHaveCount(3);
+        expect($contexts[2])->toBeEmpty();
     });
 
     it('can rebuild from scratch clearing all cache', function () {
@@ -181,37 +226,11 @@ describe('ContextManager', function () {
         expect($this->manager->get('cached'))->toBe('value');
     });
 
-    it('can reset context and notify channels', function () {
-        $provider = Mockery::mock(ContextProvider::class);
-        $provider->shouldReceive('shouldRun')->andReturn(true);
-        $provider->shouldReceive('isCacheable')->andReturn(true);
-        $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
-
-        $channel = Mockery::mock(ContextChannel::class);
-        // Primeira chamada: build() com contexto normal
-        $channel->shouldReceive('registerContext')
-            ->once()
-            ->with(['test' => 'value']);
-        // Segunda chamada: reset() com contexto vazio
-        $channel->shouldReceive('registerContext')
-            ->once()
-            ->with([]);
-
-        $this->manager->addProvider($provider);
-        $this->manager->addChannel($channel);
-        $this->manager->build();
-
-        // Reset deve limpar e notificar channels com contexto vazio
-        $result = $this->manager->reset();
-
-        expect($result)->toBeInstanceOf(ContextManager::class);
-    });
-
     it('can clear cache for specific provider', function () {
         $provider = Mockery::mock(ContextProvider::class);
         $provider->shouldReceive('shouldRun')->andReturn(true);
         $provider->shouldReceive('isCacheable')->andReturn(true);
-        $provider->shouldReceive('getContext')->once()->andReturn(['cached' => 'value']);
+        $provider->shouldReceive('getContext')->twice()->andReturn(['cached' => 'value'], ['cached' => 'new-value']);
 
         $this->manager->addProvider($provider);
         $this->manager->build();
@@ -225,8 +244,9 @@ describe('ContextManager', function () {
 
         expect($result)->toBeInstanceOf(ContextManager::class);
 
-        // Verificar que marca contexto como não construído
-        // (forçará rebuild no próximo acesso)
+        // Forçar rebuild para garantir que o provider seja executado novamente
+        $this->manager->rebuild();
+        expect($this->manager->get('cached'))->toBe('new-value');
     });
 
     it('rebuild marks context as not built to trigger rebuild on next access', function () {

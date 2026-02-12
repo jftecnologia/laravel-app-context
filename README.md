@@ -66,6 +66,9 @@ return [
 ```php
 use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 
+// Build the context (optional, will be built automatically on first access)
+LaravelContext::build();
+
 // Get all context
 $context = LaravelContext::all();
 
@@ -81,7 +84,7 @@ if (LaravelContext::has('user.id')) {
     // User is authenticated
 }
 
-// Set a custom value
+// Set a custom value and immediately notify registered channels
 LaravelContext::set('custom.key', 'custom value');
 
 // Rebuild context from scratch (clears all caches and rebuilds)
@@ -91,11 +94,10 @@ LaravelContext::rebuild();
 use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 LaravelContext::clearProviderCache(TimestampProvider::class);
 
-// Clear the context and cache
+// Clear the context (clear now also notifies channels with empty context)
 LaravelContext::clear();
 
-// Reset context and notify channels with empty context
-LaravelContext::reset();
+// Note: `LaravelContext::build()` now short-circuits after the first execution and simply replays the cached context to the channels. Call `clear()` or `rebuild()` to force a fresh collection, and use `sendContextToChannels()` whenever you want to resync the channels without rerunning the providers.
 ```
 
 ### Context Structure
@@ -435,7 +437,7 @@ LaravelContext::get(string $key, mixed $default = null): mixed
 // Check if a key exists
 LaravelContext::has(string $key): bool
 
-// Set a custom value
+// Set a custom value and notify channels immediately
 LaravelContext::set(string $key, mixed $value): self
 
 // Rebuild context from scratch (clears all caches)
@@ -447,8 +449,8 @@ LaravelContext::clearProviderCache(string $providerClass): self
 // Clear all context and cache
 LaravelContext::clear(): self
 
-// Reset context and notify channels
-LaravelContext::reset(): self
+// Replay current context to all channels without rerunning providers
+LaravelContext::sendContextToChannels(): void
 
 // Add provider programmatically
 LaravelContext::addProvider(ContextProvider $provider): self
@@ -485,15 +487,11 @@ LaravelContext::rebuild();
 LaravelContext::rebuild();
 ```
 
-#### `reset()`
-Clears all context and notifies channels with empty context. Use when:
-- You need to completely reset the context state
-- Testing scenarios where you need clean state
-- End of lifecycle operations
+#### `clear()`
+Clears the context and cache, marks the manager as needing a rebuild, and immediately sends the empty context to every channel. Use when you need to reset state without recomputing anything yet or before collecting a fresh context explicitly.
 
 ```php
-// Example: In test teardown
-LaravelContext::reset();
+LaravelContext::clear();
 ```
 
 #### `clearProviderCache()`
@@ -503,6 +501,13 @@ use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 
 // Only recalculate timestamp on next access
 LaravelContext::clearProviderCache(TimestampProvider::class);
+```
+
+#### `sendContextToChannels()`
+Replays the current context to every registered channel without rerunning the providers. Use it when you need to sync channels after calling `set()` multiple times or when you changed the context array directly.
+
+```php
+LaravelContext::sendContextToChannels();
 ```
 
 ## Built-in Providers

@@ -48,7 +48,11 @@ final class ContextManager
      */
     public function build(): self
     {
-        $this->context = [];
+        if ($this->built) {
+            $this->sendContextToChannels();
+
+            return $this;
+        }
 
         foreach ($this->providers as $provider) {
             if ($provider->shouldRun()) {
@@ -78,7 +82,7 @@ final class ContextManager
     /**
      * Register the context to all registered channels
      */
-    protected function sendContextToChannels(): void
+    public function sendContextToChannels(): void
     {
         foreach ($this->channels as $channel) {
             $channel->registerContext($this->context);
@@ -90,10 +94,6 @@ final class ContextManager
      */
     public function all(): array
     {
-        if (! $this->built) {
-            $this->build();
-        }
-
         return $this->context;
     }
 
@@ -120,6 +120,8 @@ final class ContextManager
     {
         Arr::set($this->context, $key, $value);
 
+        $this->sendContextToChannels();
+
         return $this;
     }
 
@@ -130,7 +132,9 @@ final class ContextManager
     {
         $this->clear();
 
-        return $this->build();
+        $this->build();
+
+        return $this;
     }
 
     /**
@@ -152,17 +156,7 @@ final class ContextManager
     {
         $this->context = [];
         $this->providerCache = [];
-        $this->built = true;
-
-        return $this;
-    }
-
-    /**
-     * Resets the context sending an empty context to channels
-     */
-    public function reset(): self
-    {
-        $this->clear();
+        $this->built = false;
 
         $this->sendContextToChannels();
 

@@ -3,6 +3,8 @@
 declare(strict_types = 1);
 
 use JuniorFontenele\LaravelContext\ContextManager;
+use JuniorFontenele\LaravelContext\Contracts\ContextChannel;
+use JuniorFontenele\LaravelContext\Contracts\ContextProvider;
 use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 
@@ -109,22 +111,25 @@ describe('LaravelContext Facade', function () {
         expect(LaravelContext::all())->toHaveKey('timestamp');
     });
 
-    it('can call reset() method through facade', function () {
+    it('can call sendContextToChannels() method through facade', function () {
+        $channel = Mockery::mock(ContextChannel::class);
+        $channel->shouldReceive('registerContext')
+            ->twice()
+            ->with(Mockery::on(function ($context) {
+                return is_array($context) && isset($context['test']) && $context['test'] === 'value';
+            }));
+
+        $provider = Mockery::mock(ContextProvider::class);
+        $provider->shouldReceive('shouldRun')->andReturn(true);
+        $provider->shouldReceive('isCacheable')->andReturn(true);
+        $provider->shouldReceive('getContext')->andReturn(['test' => 'value']);
+
         LaravelContext::clear();
-        LaravelContext::addProvider(new TimestampProvider());
+        LaravelContext::addProvider($provider);
+        LaravelContext::addChannel($channel);
         LaravelContext::build();
 
-        // Adiciona valor manual
-        LaravelContext::set('manual.value', 'test');
-        expect(LaravelContext::has('manual.value'))->toBeTrue();
-
-        $result = LaravelContext::reset();
-
-        expect($result)->toBeInstanceOf(ContextManager::class);
-
-        // Após reset, valores manuais devem ter sido limpos
-        // mas providers registrados no service provider podem ter adicionado dados novamente
-        expect(LaravelContext::has('manual.value'))->toBeFalse();
+        LaravelContext::sendContextToChannels();
     });
 
     it('can call clearProviderCache() method through facade', function () {
