@@ -155,7 +155,6 @@ final class ContextManager
     public function clear(): self
     {
         $this->context = [];
-        $this->providerCache = [];
         $this->built = false;
 
         $this->sendContextToChannels();
