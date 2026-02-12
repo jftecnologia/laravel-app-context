@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\Providers\AppProvider;
+use JuniorFontenele\LaravelContext\Providers\AppProvider;
 
 describe('AppProvider', function () {
     it('should run by default', function () {
@@ -14,6 +14,6 @@ describe('AppProvider', function () {
     it('extends AbstractProvider', function () {
         $provider = new AppProvider();
 
-        expect($provider)->toBeInstanceOf(JuniorFontenele\LaravelAppContext\Providers\AbstractProvider::class);
+        expect($provider)->toBeInstanceOf(JuniorFontenele\LaravelContext\Providers\AbstractProvider::class);
     });
 });

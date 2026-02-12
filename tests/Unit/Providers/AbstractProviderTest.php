@@ -2,8 +2,8 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\Contracts\ContextProvider;
-use JuniorFontenele\LaravelAppContext\Providers\AbstractProvider;
+use JuniorFontenele\LaravelContext\Contracts\ContextProvider;
+use JuniorFontenele\LaravelContext\Providers\AbstractProvider;
 
 describe('AbstractProvider', function () {
     it('implements ContextProvider interface', function () {

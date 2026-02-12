@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext\Facades;
+namespace JuniorFontenele\LaravelContext\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use JuniorFontenele\LaravelAppContext\ContextManager;
+use JuniorFontenele\LaravelContext\ContextManager;
 
 /**
  * @method static array all()
@@ -17,12 +17,12 @@ use JuniorFontenele\LaravelAppContext\ContextManager;
  * @method static self clear()
  * @method static self reset()
  * @method static self clearProviderCache(string $providerClass)
- * @method static self addProvider(\JuniorFontenele\LaravelAppContext\Contracts\ContextProvider $provider)
- * @method static self addChannel(\JuniorFontenele\LaravelAppContext\Contracts\ContextChannel $channel)
+ * @method static self addProvider(\JuniorFontenele\LaravelContext\Contracts\ContextProvider $provider)
+ * @method static self addChannel(\JuniorFontenele\LaravelContext\Contracts\ContextChannel $channel)
  *
  * @see ContextManager
  */
-class AppContext extends Facade
+class LaravelContext extends Facade
 {
     protected static function getFacadeAccessor(): string
     {

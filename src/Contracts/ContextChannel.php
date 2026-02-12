@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext\Contracts;
+namespace JuniorFontenele\LaravelContext\Contracts;
 
 interface ContextChannel
 {

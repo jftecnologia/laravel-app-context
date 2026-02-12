@@ -2,11 +2,11 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\Providers\AppProvider;
-use JuniorFontenele\LaravelAppContext\Providers\HostProvider;
-use JuniorFontenele\LaravelAppContext\Providers\RequestProvider;
-use JuniorFontenele\LaravelAppContext\Providers\TimestampProvider;
-use JuniorFontenele\LaravelAppContext\Providers\UserProvider;
+use JuniorFontenele\LaravelContext\Providers\AppProvider;
+use JuniorFontenele\LaravelContext\Providers\HostProvider;
+use JuniorFontenele\LaravelContext\Providers\RequestProvider;
+use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
+use JuniorFontenele\LaravelContext\Providers\UserProvider;
 
 describe('Providers Feature Tests', function () {
     describe('AppProvider', function () {

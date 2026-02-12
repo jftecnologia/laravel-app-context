@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\ContextManager;
-use JuniorFontenele\LaravelAppContext\Contracts\ContextChannel;
-use JuniorFontenele\LaravelAppContext\Contracts\ContextProvider;
+use JuniorFontenele\LaravelContext\ContextManager;
+use JuniorFontenele\LaravelContext\Contracts\ContextChannel;
+use JuniorFontenele\LaravelContext\Contracts\ContextProvider;
 
 beforeEach(function () {
     $this->manager = new ContextManager();

@@ -9,7 +9,7 @@ return [
     |--------------------------------------------------------------------------
     | Disables or enables the Laravel App Context package
     */
-    'enabled' => env('LARAVEL_APP_CONTEXT_ENABLED', true),
+    'enabled' => env('LARAVEL_CONTEXT_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -19,11 +19,11 @@ return [
     | Run in the listed order
     */
     'providers' => [
-        JuniorFontenele\LaravelAppContext\Providers\TimestampProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\AppProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\HostProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\RequestProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\UserProvider::class,
+        JuniorFontenele\LaravelContext\Providers\TimestampProvider::class,
+        JuniorFontenele\LaravelContext\Providers\AppProvider::class,
+        JuniorFontenele\LaravelContext\Providers\HostProvider::class,
+        JuniorFontenele\LaravelContext\Providers\RequestProvider::class,
+        JuniorFontenele\LaravelContext\Providers\UserProvider::class,
 
         // Add your custom providers here
     ],
@@ -35,7 +35,7 @@ return [
     | Where the context will be registered
     */
     'channels' => [
-        JuniorFontenele\LaravelAppContext\Channels\LogChannel::class,
+        JuniorFontenele\LaravelContext\Channels\LogChannel::class,
 
         // Add your custom channels here
     ],

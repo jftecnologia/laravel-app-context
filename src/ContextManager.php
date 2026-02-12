@@ -2,11 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext;
+namespace JuniorFontenele\LaravelContext;
 
 use Illuminate\Support\Arr;
-use JuniorFontenele\LaravelAppContext\Contracts\ContextChannel;
-use JuniorFontenele\LaravelAppContext\Contracts\ContextProvider;
+use JuniorFontenele\LaravelContext\Contracts\ContextChannel;
+use JuniorFontenele\LaravelContext\Contracts\ContextProvider;
 
 final class ContextManager
 {

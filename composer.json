@@ -1,13 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "jftecnologia/laravel-app-context",
+    "name": "jftecnologia/laravel-context",
     "description": "Context on steroids for Laravel applications",
-    "homepage": "https://github.com/jftecnologia/laravel-app-context",
+    "homepage": "https://github.com/jftecnologia/laravel-context",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "JuniorFontenele\\LaravelAppContext\\": "src/"
+            "JuniorFontenele\\LaravelContext\\": "src/"
         }
     },
     "authors": [
@@ -24,10 +24,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JuniorFontenele\\LaravelAppContext\\LaravelAppContextServiceProvider"
+                "JuniorFontenele\\LaravelContext\\LaravelContextServiceProvider"
             ],
             "aliases": {
-                "AppContext": "JuniorFontenele\\LaravelAppContext\\Facades\\AppContext"
+                "LaravelContext": "JuniorFontenele\\LaravelContext\\Facades\\LaravelContext"
             },
             "branch-alias": {
                 "dev-main": "1.x-dev",

@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext\Channels;
+namespace JuniorFontenele\LaravelContext\Channels;
 
 use Illuminate\Support\Facades\Context;
-use JuniorFontenele\LaravelAppContext\Contracts\ContextChannel;
+use JuniorFontenele\LaravelContext\Contracts\ContextChannel;
 
 class LogChannel implements ContextChannel
 {

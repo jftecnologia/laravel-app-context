@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\Providers\HostProvider;
+use JuniorFontenele\LaravelContext\Providers\HostProvider;
 
 describe('HostProvider', function () {
     it('returns host context information', function () {

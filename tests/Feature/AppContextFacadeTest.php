@@ -2,39 +2,39 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\ContextManager;
-use JuniorFontenele\LaravelAppContext\Facades\AppContext;
-use JuniorFontenele\LaravelAppContext\Providers\TimestampProvider;
+use JuniorFontenele\LaravelContext\ContextManager;
+use JuniorFontenele\LaravelContext\Facades\LaravelContext;
+use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 
-describe('AppContext Facade', function () {
+describe('LaravelContext Facade', function () {
     it('resolves to ContextManager', function () {
-        $facade = AppContext::getFacadeRoot();
+        $facade = LaravelContext::getFacadeRoot();
 
         expect($facade)->toBeInstanceOf(ContextManager::class);
     });
 
     it('can call all() method through facade', function () {
-        AppContext::addProvider(new TimestampProvider());
+        LaravelContext::addProvider(new TimestampProvider());
 
-        $context = AppContext::all();
+        $context = LaravelContext::all();
 
         expect($context)->toBeArray();
         expect($context)->toHaveKey('timestamp');
     });
 
     it('can call get() method through facade', function () {
-        AppContext::addProvider(new TimestampProvider());
+        LaravelContext::addProvider(new TimestampProvider());
 
-        $timestamp = AppContext::get('timestamp');
+        $timestamp = LaravelContext::get('timestamp');
 
         expect($timestamp)->toBeString();
     });
 
     it('can call set() method through facade', function () {
-        AppContext::build(); // Resolve primeiro
-        AppContext::set('custom.key', 'facade-value');
+        LaravelContext::build(); // Resolve primeiro
+        LaravelContext::set('custom.key', 'facade-value');
 
-        expect(AppContext::get('custom.key'))->toBe('facade-value');
+        expect(LaravelContext::get('custom.key'))->toBe('facade-value');
     });
 
     it('can call clear() method through facade', function () {
@@ -42,97 +42,97 @@ describe('AppContext Facade', function () {
         // mas não os providers registrados (que são parte da configuração)
 
         // Adiciona valor manual
-        AppContext::build();
-        AppContext::set('manual.test', 'value');
-        expect(AppContext::has('manual.test'))->toBeTrue();
+        LaravelContext::build();
+        LaravelContext::set('manual.test', 'value');
+        expect(LaravelContext::has('manual.test'))->toBeTrue();
 
         // Clear deve limpar tudo (incluindo valores manuais)
-        $result = AppContext::clear();
+        $result = LaravelContext::clear();
 
         expect($result)->toBeInstanceOf(ContextManager::class);
 
         // Após clear, valores manuais devem sumir
         // mas o contexto pode ter providers do service provider
-        expect(AppContext::has('manual.test'))->toBeFalse();
+        expect(LaravelContext::has('manual.test'))->toBeFalse();
     });
 
     it('can call addProvider() method through facade', function () {
         $provider = new TimestampProvider();
 
-        $result = AppContext::addProvider($provider);
+        $result = LaravelContext::addProvider($provider);
 
         expect($result)->toBeInstanceOf(ContextManager::class);
     });
 
     it('can call build() method through facade', function () {
-        AppContext::clear();
-        AppContext::addProvider(new TimestampProvider());
+        LaravelContext::clear();
+        LaravelContext::addProvider(new TimestampProvider());
 
-        $result = AppContext::build();
+        $result = LaravelContext::build();
 
         expect($result)->toBeInstanceOf(ContextManager::class);
-        expect(AppContext::all())->toHaveKey('timestamp');
+        expect(LaravelContext::all())->toHaveKey('timestamp');
     });
 
     it('can chain methods through facade', function () {
-        AppContext::clear()
+        LaravelContext::clear()
             ->build() // Resolve primeiro
             ->set('key1', 'value1')
             ->set('key2', 'value2');
 
-        expect(AppContext::get('key1'))->toBe('value1');
-        expect(AppContext::get('key2'))->toBe('value2');
+        expect(LaravelContext::get('key1'))->toBe('value1');
+        expect(LaravelContext::get('key2'))->toBe('value2');
     });
 
     it('returns default value when key not found', function () {
-        AppContext::clear();
+        LaravelContext::clear();
 
-        expect(AppContext::get('nonexistent', 'default'))->toBe('default');
+        expect(LaravelContext::get('nonexistent', 'default'))->toBe('default');
     });
 
     it('handles nested keys through facade', function () {
-        AppContext::clear();
-        AppContext::build(); // Resolve primeiro
-        AppContext::set('nested.deep.key', 'nested-value');
+        LaravelContext::clear();
+        LaravelContext::build(); // Resolve primeiro
+        LaravelContext::set('nested.deep.key', 'nested-value');
 
-        expect(AppContext::get('nested.deep.key'))->toBe('nested-value');
+        expect(LaravelContext::get('nested.deep.key'))->toBe('nested-value');
     });
 
     it('can call rebuild() method through facade', function () {
-        AppContext::clear();
-        AppContext::addProvider(new TimestampProvider());
-        AppContext::build();
+        LaravelContext::clear();
+        LaravelContext::addProvider(new TimestampProvider());
+        LaravelContext::build();
 
-        $result = AppContext::rebuild();
+        $result = LaravelContext::rebuild();
 
         expect($result)->toBeInstanceOf(ContextManager::class);
-        expect(AppContext::all())->toHaveKey('timestamp');
+        expect(LaravelContext::all())->toHaveKey('timestamp');
     });
 
     it('can call reset() method through facade', function () {
-        AppContext::clear();
-        AppContext::addProvider(new TimestampProvider());
-        AppContext::build();
+        LaravelContext::clear();
+        LaravelContext::addProvider(new TimestampProvider());
+        LaravelContext::build();
 
         // Adiciona valor manual
-        AppContext::set('manual.value', 'test');
-        expect(AppContext::has('manual.value'))->toBeTrue();
+        LaravelContext::set('manual.value', 'test');
+        expect(LaravelContext::has('manual.value'))->toBeTrue();
 
-        $result = AppContext::reset();
+        $result = LaravelContext::reset();
 
         expect($result)->toBeInstanceOf(ContextManager::class);
 
         // Após reset, valores manuais devem ter sido limpos
         // mas providers registrados no service provider podem ter adicionado dados novamente
-        expect(AppContext::has('manual.value'))->toBeFalse();
+        expect(LaravelContext::has('manual.value'))->toBeFalse();
     });
 
     it('can call clearProviderCache() method through facade', function () {
-        AppContext::clear();
-        AppContext::addProvider(new TimestampProvider());
-        AppContext::build();
+        LaravelContext::clear();
+        LaravelContext::addProvider(new TimestampProvider());
+        LaravelContext::build();
 
-        $result = AppContext::clearProviderCache(TimestampProvider::class);
+        $result = LaravelContext::clearProviderCache(TimestampProvider::class);
 
         expect($result)->toBeInstanceOf(ContextManager::class);
     });

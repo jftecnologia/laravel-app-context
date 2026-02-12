@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 use Illuminate\Support\Facades\Context;
-use JuniorFontenele\LaravelAppContext\Channels\LogChannel;
+use JuniorFontenele\LaravelContext\Channels\LogChannel;
 
 describe('LogChannel', function () {
     it('registers context in Laravel Context facade', function () {
@@ -40,6 +40,6 @@ describe('LogChannel', function () {
     it('implements ContextChannel interface', function () {
         $channel = new LogChannel();
 
-        expect($channel)->toBeInstanceOf(JuniorFontenele\LaravelAppContext\Contracts\ContextChannel::class);
+        expect($channel)->toBeInstanceOf(JuniorFontenele\LaravelContext\Contracts\ContextChannel::class);
     });
 });

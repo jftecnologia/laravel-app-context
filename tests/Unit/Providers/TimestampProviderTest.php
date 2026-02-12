@@ -2,7 +2,8 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\Providers\TimestampProvider;
+use Illuminate\Support\Carbon;
+use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 
 describe('TimestampProvider', function () {
     it('returns timestamp in ISO 8601 format', function () {
@@ -17,11 +18,18 @@ describe('TimestampProvider', function () {
     it('generates different timestamps over time', function () {
         $provider = new TimestampProvider();
 
+        $now = now();
+        Carbon::setTestNow($now);
+
         $context1 = $provider->getContext();
-        sleep(1);
+
+        Carbon::setTestNow($now->addSeconds(5));
+
         $context2 = $provider->getContext();
 
         expect($context1['timestamp'])->not()->toBe($context2['timestamp']);
+
+        Carbon::setTestNow(); // Clear the test time
     });
 
     it('should run by default', function () {

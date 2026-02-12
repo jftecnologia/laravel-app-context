@@ -2,11 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext;
+namespace JuniorFontenele\LaravelContext;
 
 use Illuminate\Support\ServiceProvider;
 
-class LaravelAppContextServiceProvider extends ServiceProvider
+class LaravelContextServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -17,11 +17,11 @@ class LaravelAppContextServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/laravel-app-context.php' => config_path('laravel-app-context.php'),
-            ], 'laravel-app-context-config');
+                __DIR__ . '/../config/laravel-context.php' => config_path('laravel-context.php'),
+            ], 'laravel-context-config');
         }
 
-        if (config('laravel-app-context.enabled', true)) {
+        if (config('laravel-context.enabled', true)) {
             $contextManager = $this->app->make(ContextManager::class);
 
             $contextManager->build();
@@ -35,10 +35,10 @@ class LaravelAppContextServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-app-context.php', 'laravel-app-context');
+        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-context.php', 'laravel-context');
 
         $this->app->singleton(ContextManager::class, function ($app): ContextManager {
-            $config = $app['config']->get('laravel-app-context');
+            $config = $app['config']->get('laravel-context');
 
             $contextManager = new ContextManager();
 
@@ -53,6 +53,6 @@ class LaravelAppContextServiceProvider extends ServiceProvider
             return $contextManager;
         });
 
-        $this->app->alias(ContextManager::class, 'laravel-app-context');
+        $this->app->alias(ContextManager::class, 'laravel-context');
     }
 }

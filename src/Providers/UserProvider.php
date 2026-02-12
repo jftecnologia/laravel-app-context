@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext\Providers;
+namespace JuniorFontenele\LaravelContext\Providers;
 
 use Illuminate\Support\Facades\Auth;
 

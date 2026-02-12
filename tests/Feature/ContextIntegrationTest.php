@@ -3,11 +3,11 @@
 declare(strict_types = 1);
 
 use Illuminate\Support\Facades\Context;
-use JuniorFontenele\LaravelAppContext\Channels\LogChannel;
-use JuniorFontenele\LaravelAppContext\ContextManager;
-use JuniorFontenele\LaravelAppContext\Providers\AppProvider;
-use JuniorFontenele\LaravelAppContext\Providers\HostProvider;
-use JuniorFontenele\LaravelAppContext\Providers\TimestampProvider;
+use JuniorFontenele\LaravelContext\Channels\LogChannel;
+use JuniorFontenele\LaravelContext\ContextManager;
+use JuniorFontenele\LaravelContext\Providers\AppProvider;
+use JuniorFontenele\LaravelContext\Providers\HostProvider;
+use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 
 describe('Context Integration', function () {
     it('resolves context from multiple providers and sends to channels', function () {
@@ -50,7 +50,7 @@ describe('Context Integration', function () {
         $manager = new ContextManager();
 
         // Provider customizado 1
-        $provider1 = new class extends JuniorFontenele\LaravelAppContext\Providers\AbstractProvider
+        $provider1 = new class extends JuniorFontenele\LaravelContext\Providers\AbstractProvider
         {
             public function getContext(): array
             {
@@ -63,7 +63,7 @@ describe('Context Integration', function () {
         };
 
         // Provider customizado 2
-        $provider2 = new class extends JuniorFontenele\LaravelAppContext\Providers\AbstractProvider
+        $provider2 = new class extends JuniorFontenele\LaravelContext\Providers\AbstractProvider
         {
             public function getContext(): array
             {
@@ -139,7 +139,7 @@ describe('Context Integration', function () {
 
         $order = [];
 
-        $provider1 = new class ($order) extends JuniorFontenele\LaravelAppContext\Providers\AbstractProvider
+        $provider1 = new class ($order) extends JuniorFontenele\LaravelContext\Providers\AbstractProvider
         {
             public function __construct(private &$order)
             {
@@ -153,7 +153,7 @@ describe('Context Integration', function () {
             }
         };
 
-        $provider2 = new class ($order) extends JuniorFontenele\LaravelAppContext\Providers\AbstractProvider
+        $provider2 = new class ($order) extends JuniorFontenele\LaravelContext\Providers\AbstractProvider
         {
             public function __construct(private &$order)
             {

@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace JuniorFontenele\LaravelAppContext\Providers;
+namespace JuniorFontenele\LaravelContext\Providers;
 
-use JuniorFontenele\LaravelAppContext\Contracts\ContextProvider;
+use JuniorFontenele\LaravelContext\Contracts\ContextProvider;
 
 abstract class AbstractProvider implements ContextProvider
 {

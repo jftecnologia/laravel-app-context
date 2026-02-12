@@ -1,9 +1,9 @@
-# Laravel App Context
+# Laravel Context
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/jftecnologia/laravel-app-context.svg?style=flat-square)](https://packagist.org/packages/jftecnologia/laravel-app-context)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/jftecnologia/laravel-app-context/tests.yml?branch=master&label=tests&style=flat-square)](https://github.com/jftecnologia/laravel-app-context/actions?query=workflow%3Atests+branch%3Amaster)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/jftecnologia/laravel-app-context/fix-php-code-style.yml?branch=master&label=code%20style&style=flat-square)](https://github.com/jftecnologia/laravel-app-context/actions?query=workflow%3A"fix-php-code-style-issues"+branch%3Amaster)
-[![Total Downloads](https://img.shields.io/packagist/dt/jftecnologia/laravel-app-context.svg?style=flat-square)](https://packagist.org/packages/jftecnologia/laravel-app-context)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/jftecnologia/laravel-context.svg?style=flat-square)](https://packagist.org/packages/jftecnologia/laravel-context)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/jftecnologia/laravel-context/tests.yml?branch=master&label=tests&style=flat-square)](https://github.com/jftecnologia/laravel-context/actions?query=workflow%3Atests+branch%3Amaster)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/jftecnologia/laravel-context/fix-php-code-style.yml?branch=master&label=code%20style&style=flat-square)](https://github.com/jftecnologia/laravel-context/actions?query=workflow%3A"fix-php-code-style-issues"+branch%3Amaster)
+[![Total Downloads](https://img.shields.io/packagist/dt/jftecnologia/laravel-context.svg?style=flat-square)](https://packagist.org/packages/jftecnologia/laravel-context)
 
 A powerful and extensible package for managing application context in Laravel. Automatically collect and distribute context information from multiple sources (user, request, environment, etc.) to various channels (logs, monitoring systems, etc.).
 
@@ -23,7 +23,7 @@ A powerful and extensible package for managing application context in Laravel. A
 You can install the package via composer:
 
 ```bash
-composer require jftecnologia/laravel-app-context
+composer require jftecnologia/laravel-context
 ```
 
 The package will automatically register its service provider.
@@ -33,26 +33,26 @@ The package will automatically register its service provider.
 Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --tag="laravel-app-context-config"
+php artisan vendor:publish --tag="laravel-context-config"
 ```
 
-This will create a `config/laravel-app-context.php` file with the following structure:
+This will create a `config/laravel-context.php` file with the following structure:
 
 ```php
 return [
-    'enabled' => env('LARAVEL_APP_CONTEXT_ENABLED', true),
+    'enabled' => env('LARAVEL_CONTEXT_ENABLED', true),
     
     'providers' => [
         // Built-in providers
-        JuniorFontenele\LaravelAppContext\Providers\TimestampProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\AppProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\HostProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\RequestProvider::class,
-        JuniorFontenele\LaravelAppContext\Providers\UserProvider::class,
+        JuniorFontenele\LaravelContext\Providers\TimestampProvider::class,
+        JuniorFontenele\LaravelContext\Providers\AppProvider::class,
+        JuniorFontenele\LaravelContext\Providers\HostProvider::class,
+        JuniorFontenele\LaravelContext\Providers\RequestProvider::class,
+        JuniorFontenele\LaravelContext\Providers\UserProvider::class,
     ],
     
     'channels' => [
-        JuniorFontenele\LaravelAppContext\Channels\LogChannel::class,
+        JuniorFontenele\LaravelContext\Channels\LogChannel::class,
         
         // Add your custom channels here
     ],
@@ -64,38 +64,38 @@ return [
 ### Using the Facade
 
 ```php
-use JuniorFontenele\LaravelAppContext\Facades\AppContext;
+use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 
 // Get all context
-$context = AppContext::all();
+$context = LaravelContext::all();
 
 // Get a specific context value
-$userId = AppContext::get('user.id');
-$appName = AppContext::get('app.name');
+$userId = LaravelContext::get('user.id');
+$appName = LaravelContext::get('app.name');
 
 // Get with a default value
-$userName = AppContext::get('user.name', 'Guest');
+$userName = LaravelContext::get('user.name', 'Guest');
 
 // Check if a key exists
-if (AppContext::has('user.id')) {
+if (LaravelContext::has('user.id')) {
     // User is authenticated
 }
 
 // Set a custom value
-AppContext::set('custom.key', 'custom value');
+LaravelContext::set('custom.key', 'custom value');
 
 // Rebuild context from scratch (clears all caches and rebuilds)
-AppContext::rebuild();
+LaravelContext::rebuild();
 
 // Clear cache for a specific provider
-use JuniorFontenele\LaravelAppContext\Providers\TimestampProvider;
-AppContext::clearProviderCache(TimestampProvider::class);
+use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
+LaravelContext::clearProviderCache(TimestampProvider::class);
 
 // Clear the context and cache
-AppContext::clear();
+LaravelContext::clear();
 
 // Reset context and notify channels with empty context
-AppContext::reset();
+LaravelContext::reset();
 ```
 
 ### Context Structure
@@ -163,18 +163,18 @@ These providers execute **every time** you access the context, ensuring data is 
 ### Example: Login/Logout Scenario
 
 ```php
-use JuniorFontenele\LaravelAppContext\Facades\AppContext;
+use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 use Illuminate\Support\Facades\Auth;
 
 // Before login
-$context = AppContext::all();
+$context = LaravelContext::all();
 // Result: no 'user' key (not authenticated)
 
 // User logs in
 Auth::login($user);
 
 // After login - NO need to call refresh()!
-$context = AppContext::all();
+$context = LaravelContext::all();
 // Result: 'user' key is present with fresh data
 // 'app' and 'host' are from cache (fast!)
 ```
@@ -192,7 +192,7 @@ Providers are classes that collect specific context information. Create a custom
 
 namespace App\Context\Providers;
 
-use JuniorFontenele\LaravelAppContext\Providers\AbstractProvider;
+use JuniorFontenele\LaravelContext\Providers\AbstractProvider;
 
 class CustomProvider extends AbstractProvider
 {
@@ -227,7 +227,7 @@ For providers with dynamic data that should always be recalculated:
 
 namespace App\Context\Providers;
 
-use JuniorFontenele\LaravelAppContext\Providers\AbstractProvider;
+use JuniorFontenele\LaravelContext\Providers\AbstractProvider;
 
 class SessionProvider extends AbstractProvider
 {
@@ -280,7 +280,7 @@ Control when your provider should run using the `shouldRun()` method:
 
 namespace App\Context\Providers;
 
-use JuniorFontenele\LaravelAppContext\Providers\AbstractProvider;
+use JuniorFontenele\LaravelContext\Providers\AbstractProvider;
 
 class DatabaseProvider extends AbstractProvider
 {
@@ -309,13 +309,13 @@ class DatabaseProvider extends AbstractProvider
 
 ### Registering Custom Providers
 
-Add your custom provider to the `config/laravel-app-context.php` file:
+Add your custom provider to the `config/laravel-context.php` file:
 
 ```php
 'providers' => [
     // Built-in providers
-    JuniorFontenele\LaravelAppContext\Providers\TimestampProvider::class,
-    JuniorFontenele\LaravelAppContext\Providers\AppProvider::class,
+    JuniorFontenele\LaravelContext\Providers\TimestampProvider::class,
+    JuniorFontenele\LaravelContext\Providers\AppProvider::class,
     
     // Your custom providers
     App\Context\Providers\CustomProvider::class,
@@ -326,12 +326,12 @@ Add your custom provider to the `config/laravel-app-context.php` file:
 Or register programmatically in a service provider:
 
 ```php
-use JuniorFontenele\LaravelAppContext\Facades\AppContext;
+use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 use App\Context\Providers\CustomProvider;
 
 public function boot()
 {
-    AppContext::addProvider(new CustomProvider());
+    LaravelContext::addProvider(new CustomProvider());
 }
 ```
 
@@ -346,7 +346,7 @@ Channels receive the resolved context and register it in different systems (logs
 
 namespace App\Context\Channels;
 
-use JuniorFontenele\LaravelAppContext\Contracts\ContextChannel;
+use JuniorFontenele\LaravelContext\Contracts\ContextChannel;
 use Illuminate\Support\Facades\Cache;
 
 class CacheChannel implements ContextChannel
@@ -366,7 +366,7 @@ class CacheChannel implements ContextChannel
 
 namespace App\Context\Channels;
 
-use JuniorFontenele\LaravelAppContext\Contracts\ContextChannel;
+use JuniorFontenele\LaravelContext\Contracts\ContextChannel;
 use Sentry\State\Scope;
 
 class SentryChannel implements ContextChannel
@@ -394,12 +394,12 @@ class SentryChannel implements ContextChannel
 
 ### Registering Custom Channels
 
-Add your custom channel to the `config/laravel-app-context.php` file:
+Add your custom channel to the `config/laravel-context.php` file:
 
 ```php
 'channels' => [
     // Built-in channels
-    JuniorFontenele\LaravelAppContext\Channels\LogChannel::class,
+    JuniorFontenele\LaravelContext\Channels\LogChannel::class,
 
     // Add your custom channels here
     App\Context\Channels\SentryChannel::class,
@@ -410,12 +410,12 @@ Add your custom channel to the `config/laravel-app-context.php` file:
 Or register programmatically:
 
 ```php
-use JuniorFontenele\LaravelAppContext\Facades\AppContext;
+use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 use App\Context\Channels\SentryChannel;
 
 public function boot()
 {
-    AppContext::addChannel(new SentryChannel());
+    LaravelContext::addChannel(new SentryChannel());
 }
 ```
 
@@ -424,37 +424,37 @@ public function boot()
 ### Core Methods
 
 ```php
-use JuniorFontenele\LaravelAppContext\Facades\AppContext;
+use JuniorFontenele\LaravelContext\Facades\LaravelContext;
 
 // Get all context
-AppContext::all(): array
+LaravelContext::all(): array
 
 // Get a specific value
-AppContext::get(string $key, mixed $default = null): mixed
+LaravelContext::get(string $key, mixed $default = null): mixed
 
 // Check if a key exists
-AppContext::has(string $key): bool
+LaravelContext::has(string $key): bool
 
 // Set a custom value
-AppContext::set(string $key, mixed $value): self
+LaravelContext::set(string $key, mixed $value): self
 
 // Rebuild context from scratch (clears all caches)
-AppContext::rebuild(): self
+LaravelContext::rebuild(): self
 
 // Clear cache for specific provider
-AppContext::clearProviderCache(string $providerClass): self
+LaravelContext::clearProviderCache(string $providerClass): self
 
 // Clear all context and cache
-AppContext::clear(): self
+LaravelContext::clear(): self
 
 // Reset context and notify channels
-AppContext::reset(): self
+LaravelContext::reset(): self
 
 // Add provider programmatically
-AppContext::addProvider(ContextProvider $provider): self
+LaravelContext::addProvider(ContextProvider $provider): self
 
 // Add channel programmatically
-AppContext::addChannel(ContextChannel $channel): self
+LaravelContext::addChannel(ContextChannel $channel): self
 ```
 
 ### When to Use Each Method
@@ -465,8 +465,8 @@ Use for normal context access. These methods are optimized with smart caching.
 #### `has()`
 Use to check if a context key exists before accessing it:
 ```php
-if (AppContext::has('user.email')) {
-    $email = AppContext::get('user.email');
+if (LaravelContext::has('user.email')) {
+    $email = LaravelContext::get('user.email');
 }
 ```
 
@@ -479,10 +479,10 @@ Clears all caches and rebuilds the context from scratch. Use when:
 ```php
 // Example: After changing tenant in multi-tenancy
 Tenant::switch($newTenant);
-AppContext::rebuild();
+LaravelContext::rebuild();
 
 // Example: In testing when you need fresh context
-AppContext::rebuild();
+LaravelContext::rebuild();
 ```
 
 #### `reset()`
@@ -493,16 +493,16 @@ Clears all context and notifies channels with empty context. Use when:
 
 ```php
 // Example: In test teardown
-AppContext::reset();
+LaravelContext::reset();
 ```
 
 #### `clearProviderCache()`
 For granular cache control when you know only specific provider needs refresh:
 ```php
-use JuniorFontenele\LaravelAppContext\Providers\TimestampProvider;
+use JuniorFontenele\LaravelContext\Providers\TimestampProvider;
 
 // Only recalculate timestamp on next access
-AppContext::clearProviderCache(TimestampProvider::class);
+LaravelContext::clearProviderCache(TimestampProvider::class);
 ```
 
 ## Built-in Providers
@@ -538,7 +538,7 @@ Control the package behavior with these environment variables:
 
 ```env
 # Enable/disable the package
-LARAVEL_APP_CONTEXT_ENABLED=true
+LARAVEL_CONTEXT_ENABLED=true
 ```
 
 ## Use Cases

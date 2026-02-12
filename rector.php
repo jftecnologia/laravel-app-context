@@ -24,6 +24,6 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         CompactToVariablesRector::class,
-        ContainerBindConcreteWithClosureOnlyRector::class => [__DIR__ . '/src/LaravelAppContextServiceProvider.php'],
+        ContainerBindConcreteWithClosureOnlyRector::class => [__DIR__ . '/src/LaravelContextServiceProvider.php'],
     ])
     ->withCache(__DIR__ . '/storage/rector', FileCacheStorage::class);

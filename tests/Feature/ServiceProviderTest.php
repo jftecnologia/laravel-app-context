@@ -2,12 +2,12 @@
 
 declare(strict_types = 1);
 
-use JuniorFontenele\LaravelAppContext\ContextManager;
+use JuniorFontenele\LaravelContext\ContextManager;
 
-describe('LaravelAppContextServiceProvider', function () {
+describe('LaravelContextServiceProvider', function () {
     it('registers the ContextManager in the container', function () {
         expect(app()->bound(ContextManager::class))->toBeTrue();
-        expect(app()->bound('laravel-app-context'))->toBeTrue();
+        expect(app()->bound('laravel-context'))->toBeTrue();
     });
 
     it('resolves ContextManager from container', function () {
@@ -17,33 +17,33 @@ describe('LaravelAppContextServiceProvider', function () {
     });
 
     it('resolves ContextManager using alias', function () {
-        $manager = app('laravel-app-context');
+        $manager = app('laravel-context');
 
         expect($manager)->toBeInstanceOf(ContextManager::class);
     });
 
     it('merges config from package', function () {
-        expect(config('laravel-app-context'))->toBeArray();
-        expect(config('laravel-app-context'))->toHaveKey('enabled');
-        expect(config('laravel-app-context'))->toHaveKey('providers');
-        expect(config('laravel-app-context'))->toHaveKey('channels');
+        expect(config('laravel-context'))->toBeArray();
+        expect(config('laravel-context'))->toHaveKey('enabled');
+        expect(config('laravel-context'))->toHaveKey('providers');
+        expect(config('laravel-context'))->toHaveKey('channels');
     });
 
     it('loads default providers configuration', function () {
-        $providers = config('laravel-app-context.providers');
+        $providers = config('laravel-context.providers');
 
         expect($providers)->toBeArray();
         expect($providers)->not()->toBeEmpty();
-        expect($providers)->toContain(JuniorFontenele\LaravelAppContext\Providers\TimestampProvider::class);
-        expect($providers)->toContain(JuniorFontenele\LaravelAppContext\Providers\AppProvider::class);
-        expect($providers)->toContain(JuniorFontenele\LaravelAppContext\Providers\HostProvider::class);
+        expect($providers)->toContain(JuniorFontenele\LaravelContext\Providers\TimestampProvider::class);
+        expect($providers)->toContain(JuniorFontenele\LaravelContext\Providers\AppProvider::class);
+        expect($providers)->toContain(JuniorFontenele\LaravelContext\Providers\HostProvider::class);
     });
 
     it('loads default channels configuration', function () {
-        $channels = config('laravel-app-context.channels');
+        $channels = config('laravel-context.channels');
 
         expect($channels)->toBeArray();
         expect($channels)->not()->toBeEmpty();
-        expect($channels)->toContain(JuniorFontenele\LaravelAppContext\Channels\LogChannel::class);
+        expect($channels)->toContain(JuniorFontenele\LaravelContext\Channels\LogChannel::class);
     });
 });
